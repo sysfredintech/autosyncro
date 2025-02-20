@@ -1,5 +1,4 @@
-# Version 1.0
-#
+<p style="font-size: 10px;"> # Version 1.0
 # By sysfredintech
 #
 # February 20, 2025
@@ -22,4 +21,4 @@
 #
 ##### Dependencies on the remote server #####
 #
-# --- rsync (essential for backup) ---
+# --- rsync (essential for backup) ---</p>
