@@ -13,11 +13,11 @@ Edit the configuration file "autosyncro.conf" to customize your backup
 
 ## Dependencies on the local machine
 
---- rsync (essential for backup) ---
---- ssh-agent pre-configured (optional) for key and passphrase management if remote directory is defined ---
-https://wiki.archlinux.org/title/SSH_keys
---- swaks (optional) for sending emails in case of failure
+- rsync (essential for backup)
+- ssh-agent pre-configured (optional) for key and passphrase management if remote directory is defined
+(https://wiki.archlinux.org/title/SSH_keys)
+- swaks (optional) for sending emails in case of failure
 
 ## Dependencies on the remote server
 
---- rsync (essential for backup) ---
+- rsync (essential for backup)
