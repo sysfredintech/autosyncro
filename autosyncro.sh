@@ -25,6 +25,13 @@ else
     exit 2
 fi
 #
+# Check locale
+localesys=$(locale -a | grep fr_FR)
+if [[ -z "$localesys" ]]; then
+    declare -r sedsetup="sed 's/[,]//g'"
+else
+    declare -r sedsetup="sed 's/[.]//g'"
+fi
 ########## Functions ##########
 #
 ### Alert functions ###
@@ -139,10 +146,10 @@ check_dir_fromdist
 # Check disk space
 #
 if [[ $SYNCRO == "yes" ]]; then
-    declare -ir SPACE=$(rsync -arvn --delete --exclude={$EXCLUDE} -e "ssh -p $PORT" $SOURCE $DESTINATION | grep "size is" | awk '{print $4}' | sed 's/[.]//g')
+    declare -ir SPACE=$(rsync -arvn --dry-run --delete --exclude={$EXCLUDE} -e "ssh -p $PORT" $SOURCE $DESTINATION | grep "size is" | awk '{print $4}' | eval $sedsetup)
     declare -ir FREE=$(df -BK "$DESTINATION" | grep "/" | awk '{print $4}' | sed 's/[a-z]//gI')*1000
 else
-    declare -ir SPACE=$(rsync -arvn --exclude={$EXCLUDE} -e "ssh -p $PORT" $SOURCE $DESTINATION | grep "size is" | awk '{print $4}' | sed 's/[.]//g')
+    declare -ir SPACE=$(rsync -arvn  --dry-run --exclude={$EXCLUDE} -e "ssh -p $PORT" $SOURCE $DESTINATION | grep "size is" | awk '{print $4}' | eval $sedsetup)
     declare -ir FREE=$(df -BK "$DESTINATION" | grep "/" | awk '{print $4}' | sed 's/[a-z]//gI')*1000
 fi
 #
@@ -158,7 +165,7 @@ fi
 #
 declare -r SERVER=$(echo $SOURCE | cut -d ':' -f1)
 declare -r DIRECT=$(echo $SOURCE | cut -d ':' -f2)
-declare -ir SOURCECONT=$(rsync -arvn --stats --exclude={$EXCLUDE} -e "ssh -p $PORT" $SOURCE $DESTINATION | grep "Number of files" | awk '{print $4}' | sed s/[.]//g)-1
+declare -ir SOURCECONT=$(rsync -arvn  --dry-run --stats --exclude={$EXCLUDE} -e "ssh -p $PORT" $SOURCE $DESTINATION | grep "Number of files" | awk '{print $4}' | eval $sedsetup)-1
 echo -e "${YELLOW}The source directory contains $SOURCECONT items${ENDCOLOR}"
 #
 # Number of items to synchronize
@@ -212,11 +219,11 @@ declare -r DIRECT=$(echo $DESTINATION | cut -d ':' -f2)
 # Check disk space
 #
 if [[ $SYNCRO == "yes" ]]; then
-    declare -ir SPACE=$(rsync -arvn --delete --exclude={$EXCLUDE} $SOURCE -e "ssh -p $PORT" $DESTINATION | grep "size is" | awk '{print $4}' | sed 's/[.]//g')
+    declare -ir SPACE=$(rsync -arvn  --dry-run --delete --exclude={$EXCLUDE} $SOURCE -e "ssh -p $PORT" $DESTINATION | grep "size is" | awk '{print $4}' | eval $sedsetup)
     declare TMPFREE=$(ssh -p $PORT $SERVER "df -BK $DIRECT | grep "/" | sed 's/[a-z]//gI' | sed 's/[/]//g'")
     declare -ir FREE=$(echo $TMPFREE | awk '{print $4}')*1000
 else
-    declare -ir SPACE=$(rsync -arvn --exclude={$EXCLUDE} $SOURCE -e "ssh -p $PORT" $DESTINATION | grep "size is" | awk '{print $4}' | sed 's/[.]//g')
+    declare -ir SPACE=$(rsync -arvn  --dry-run --exclude={$EXCLUDE} $SOURCE -e "ssh -p $PORT" $DESTINATION | grep "size is" | awk '{print $4}' | eval $sedsetup)
     declare TMPFREE=$(ssh -p $PORT $SERVER "df -BK $DIRECT | grep "/" | sed 's/[a-z]//gI' | sed 's/[/]//g'")
     declare -ir FREE=$(echo $TMPFREE | awk '{print $4}')*1000
 fi
@@ -231,7 +238,7 @@ fi
 #
 # Number of items in the source directory
 #
-declare -ir SOURCECONT=$(rsync -arvn --stats --exclude={$EXCLUDE} -e "ssh -p $PORT" $SOURCE $DESTINATION | grep "Number of files" | awk '{print $4}' | sed s/[.]//g)-1
+declare -ir SOURCECONT=$(rsync -arvn --dry-run --stats --exclude={$EXCLUDE} -e "ssh -p $PORT" $SOURCE $DESTINATION | grep "Number of files" | awk '{print $4}' | eval $sedsetup)-1
 echo -e "${YELLOW}The source directory contains $SOURCECONT items${ENDCOLOR}"
 #
 # Number of items to synchronize
@@ -281,10 +288,10 @@ check_dir_loc2loc
 # Check disk space
 #
 if [[ $SYNCRO == "yes" ]]; then
-    declare -ir SPACE=$(rsync -arvn --delete --exclude={$EXCLUDE} $SOURCE $DESTINATION | grep "size is" | awk '{print $4}' | sed 's/[.]//g')
+    declare -ir SPACE=$(rsync -arvn --dry-run --delete --exclude={$EXCLUDE} $SOURCE $DESTINATION | grep "size is" | awk '{print $4}' | eval $sedsetup)
     declare -ir FREE=$(df -BK "$DESTINATION" | grep "/" | awk '{print $4}' | sed 's/[a-z]//gI')*1000
 else
-    declare -ir SPACE=$(rsync -arvn --exclude={$EXCLUDE} $SOURCE $DESTINATION | grep "size is" | awk '{print $4}' | sed 's/[.]//g')
+    declare -ir SPACE=$(rsync -arvn --dry-run --exclude={$EXCLUDE} $SOURCE $DESTINATION | grep "size is" | awk '{print $4}' | eval $sedsetup)
     declare -ir FREE=$(df -BK "$DESTINATION" | grep "/" | awk '{print $4}' | sed 's/[a-z]//gI')*1000
 fi
 #
@@ -298,7 +305,7 @@ fi
 #
 # Number of items in the source directory
 #
-declare -ir SOURCECONT=$(rsync -arvn --stats --exclude={$EXCLUDE} $SOURCE $DESTINATION | grep "Number of files" | awk '{print $4}' | sed s/[.]//g)-1
+declare -ir SOURCECONT=$(rsync -arvn --dry-run --stats --exclude={$EXCLUDE} $SOURCE $DESTINATION | grep "Number of files" | awk '{print $4}' | eval $sedsetup)-1
 echo -e "${YELLOW}The source directory contains $SOURCECONT items${ENDCOLOR}"
 #
 # Number of items to synchronize
