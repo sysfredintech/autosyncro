@@ -26,11 +26,11 @@ else
 fi
 #
 # Check locale
-localesys=$(locale -a | grep fr_FR)
-if [[ -z "$localesys" ]]; then
-    declare -r sedsetup="sed 's/[,]//g'"
-else
+localesys=$(locale | grep LC_NUMERIC)
+if [[ "$localesys" =~ "fr_FR" ]]; then
     declare -r sedsetup="sed 's/[.]//g'"
+else
+    declare -r sedsetup="sed 's/[,]//g'"
 fi
 ########## Functions ##########
 #
